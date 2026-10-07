@@ -2,8 +2,7 @@
  * Centralized API client for Findora Backend REST Endpoints
  */
 // Production API Base URL fallback (can be overridden dynamically by window.API_BASE_URL)
-const API_BASE = window.API_BASE_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '/api' : '/api');
-
+const API_BASE = window.API_BASE_URL || 'https://findora-smart-campus.onrender.com/api';
 function resolveImageUrl(url) {
   if (!url) return 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=600&auto=format&fit=crop';
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
