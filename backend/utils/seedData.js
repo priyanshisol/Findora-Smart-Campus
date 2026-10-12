@@ -11,9 +11,11 @@ const { runSmartMatchingForItem } = require('../services/matchingService');
 
 dotenv.config();
 
-const seedData = async () => {
+const seedData = async (shouldExit = true) => {
   try {
-    await connectDB();
+    if (mongoose.connection.readyState !== 1) {
+      await connectDB();
+    }
     console.log('Clearing existing database collections...');
 
     await User.deleteMany();
@@ -237,11 +239,34 @@ const seedData = async () => {
     console.log('Student Account: alex.morgan@campus.edu / student123');
     console.log('====================================================');
 
-    process.exit(0);
+    if (shouldExit) {
+      process.exit(0);
+    }
   } catch (err) {
     console.error('Database Seed Error:', err);
-    process.exit(1);
+    if (shouldExit) {
+      process.exit(1);
+    }
+    throw err;
   }
 };
 
-seedData();
+const ensureDefaultAdmin = async () => {
+  try {
+    const adminExists = await User.findOne({ email: 'admin@campus.edu' });
+    if (!adminExists) {
+      console.log('⚡ No admin account found. Automatically seeding default admin and demo data...');
+      await seedData(false);
+    } else {
+      console.log('✅ Admin account verified in database.');
+    }
+  } catch (err) {
+    console.error('Auto-seed verification error:', err.message);
+  }
+};
+
+if (require.main === module) {
+  seedData(true);
+}
+
+module.exports = { seedData, ensureDefaultAdmin };

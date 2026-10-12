@@ -8,8 +8,13 @@ const connectDB = require('./config/db');
 // Load environment variables
 dotenv.config();
 
-// Connect to MongoDB Database
-connectDB();
+// Connect to MongoDB Database and ensure default admin
+const { ensureDefaultAdmin } = require('./utils/seedData');
+connectDB().then(() => {
+  ensureDefaultAdmin();
+}).catch((err) => {
+  console.error('Failed to initialize MongoDB connection:', err.message);
+});
 
 const app = express();
 
